@@ -1,5 +1,6 @@
 const express = require('express');
 const axios = require('axios');
+const cheerio = require('cheerio');
 const fs = require('fs');
 const app = express();
 const port = process.env.PORT || 4000;
@@ -24,17 +25,24 @@ try {
 // Serve static files from the "public" directory
 app.use(express.static('public'));
 
-// Function to get eBay item details
+// Function to get eBay item details by scraping the page
 async function getItemDetails(itemId) {
-    const ebayUrl = `https://api.ebay.com/buy/browse/v1/item_summary/search?q=${itemId}`;
+    const ebayUrl = `https://www.ebay.com/itm/${itemId}`;
     try {
         const response = await axios.get(ebayUrl);
-        if (response.data && response.data.itemSummaries && response.data.itemSummaries.length > 0) {
-            const item = response.data.itemSummaries[0];
+        const $ = cheerio.load(response.data);
+
+        // Scrape the title
+        const title = $('.x-item-title__mainTitle .ux-textspans--BOLD').text().trim();
+
+        // Scrape the image URL
+        const imageUrl = $('.ux-image-carousel-item.active img').attr('src');
+
+        if (title && imageUrl) {
             return {
-                title: item.title,
-                link: `https://www.ebay.com/itm/${itemId}`,
-                thumbnail: item.image.imageUrl
+                title: title,
+                link: ebayUrl,
+                thumbnail: imageUrl
             };
         } else {
             return null;
