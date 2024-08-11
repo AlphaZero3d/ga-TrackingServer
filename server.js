@@ -3,12 +3,21 @@ const axios = require('axios');
 const app = express();
 const port = process.env.PORT || 3000;
 
+// Store tracked item IDs (optional, for demonstration)
+let trackedItems = [];
+
+// Track page views
 app.get('/track', async (req, res) => {
     const measurementId = 'G-2ZPVT8VYJT'; // Your specific Measurement ID
     const itemId = req.query.item_id;
 
-    if (!measurementId) {
-        return res.status(400).send('Measurement ID is required');
+    if (!itemId) {
+        return res.status(400).send('Item ID is required');
+    }
+
+    // Add the item ID to the tracked items list
+    if (!trackedItems.includes(itemId)) {
+        trackedItems.push(itemId);
     }
 
     // Log the hit to Google Analytics
@@ -34,6 +43,26 @@ app.get('/track', async (req, res) => {
     }
 });
 
+// Serve a status page
+app.get('/status', (req, res) => {
+    res.setHeader('Content-Type', 'text/html');
+    res.send(`
+        <html>
+            <head>
+                <title>Tracking Server Status</title>
+            </head>
+            <body>
+                <h1>Tracking Server is Running!</h1>
+                <p>The server is currently tracking the following item IDs:</p>
+                <ul>
+                    ${trackedItems.map(item => `<li>${item}</li>`).join('')}
+                </ul>
+            </body>
+        </html>
+    `);
+});
+
+// Start the server
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
