@@ -53,26 +53,34 @@ async function getItemDetails(itemId) {
     }
 }
 
+// Validate item ID to ensure it is a correct eBay item ID
+function isValidItemId(itemId) {
+    return /^\d{12}$/.test(itemId.trim());
+}
+
 // Track page views
 app.get('/track', async (req, res) => {
-    const measurementId = 'G-2ZPVT8VYJT'; // Your specific Measurement ID
     const itemId = req.query.item_id;
 
-    if (!itemId) {
-        return res.status(400).send('Item ID is required');
+    if (!itemId || !isValidItemId(itemId)) {
+        return res.status(400).send('Valid 12-digit Item ID is required');
     }
 
-    // Add the item ID to the tracked items list
+    // Add the item ID to the tracked items list if not already present
     if (!trackedItems.includes(itemId)) {
         trackedItems.push(itemId);
 
         // Save the updated list to the file
-        fs.writeFileSync(dataFilePath, JSON.stringify(trackedItems));
+        try {
+            fs.writeFileSync(dataFilePath, JSON.stringify(trackedItems));
+        } catch (error) {
+            console.error('Error saving tracked items:', error);
+        }
     }
 
     // Log the hit to Google Analytics
     try {
-        await axios.post(`https://www.google-analytics.com/mp/collect?measurement_id=${measurementId}`, {
+        await axios.post(`https://www.google-analytics.com/mp/collect?measurement_id=G-2ZPVT8VYJT`, {
             client_id: 'anon',
             events: [{
                 name: 'page_view',
@@ -93,95 +101,7 @@ app.get('/track', async (req, res) => {
     }
 });
 
-// Root route with Google Analytics tracking pixel
-app.get('/', (req, res) => {
-    res.send(`
-        <html>
-            <head>
-                <title>Welcome to Outlytic</title>
-                <!-- Link to the stylesheet -->
-                <link rel="stylesheet" type="text/css" href="/styles.css">
-                <!-- Global site tag (gtag.js) - Google Analytics -->
-                <script async src="https://www.googletagmanager.com/gtag/js?id=G-W1147JEP9M"></script>
-                <script>
-                  window.dataLayer = window.dataLayer || [];
-                  function gtag(){dataLayer.push(arguments);}
-                  gtag('js', new Date());
-                  gtag('config', 'G-2ZPVT8VYJT');
-                </script>
-            </head>
-            <body>
-                <h1>Welcome to Outlytic</h1>
-                <p>This is the root page of your Node.js application.</p>
-                <p>Go to <a href="/status">Status Page</a> to check the server status.</p>
-                <p>Go to <a href="/home">Homepage</a> to see the links to other pages.</p>
-                <p>Go to <a href="/current-tags">Current Tags</a> to see all tracked tags.</p>
-            </body>
-        </html>
-    `);
-});
-
-// Serve a status page with Google Analytics tracking pixel
-app.get('/status', (req, res) => {
-    res.setHeader('Content-Type', 'text/html');
-    res.send(`
-        <html>
-            <head>
-                <title>Tracking Server Status</title>
-                <!-- Link to the stylesheet -->
-                <link rel="stylesheet" type="text/css" href="/styles.css">
-                <!-- Global site tag (gtag.js) - Google Analytics -->
-                <script async src="https://www.googletagmanager.com/gtag/js?id=G-W1147JEP9M"></script>
-                <script>
-                  window.dataLayer = window.dataLayer || [];
-                  function gtag(){dataLayer.push(arguments);}
-                  gtag('js', new Date());
-                  gtag('config', 'G-2ZPVT8VYJT');
-                </script>
-            </head>
-            <body>
-                <h1>Tracking Server is Running!</h1>
-                <p>The server is currently tracking the following item IDs:</p>
-                <ul>
-                    ${trackedItems.map(item => `<li>${item}</li>`).join('')}
-                </ul>
-                <p>Go back to <a href="/home">Homepage</a>.</p>
-            </body>
-        </html>
-    `);
-});
-
-// Serve a homepage with links to other pages
-app.get('/home', (req, res) => {
-    res.send(`
-        <html>
-            <head>
-                <title>Outlytic Homepage</title>
-                <!-- Link to the stylesheet -->
-                <link rel="stylesheet" type="text/css" href="/styles.css">
-                <!-- Global site tag (gtag.js) - Google Analytics -->
-                <script async src="https://www.googletagmanager.com/gtag/js?id=G-W1147JEP9M"></script>
-                <script>
-                  window.dataLayer = window.dataLayer || [];
-                  function gtag(){dataLayer.push(arguments);}
-                  gtag('js', new Date());
-                  gtag('config', 'G-2ZPVT8VYJT');
-                </script>
-            </head>
-            <body>
-                <h1>Outlytic Homepage</h1>
-                <p>Welcome to the Outlytic homepage. Below are links to various pages:</p>
-                <ul>
-                    <li><a href="/">Root Page</a></li>
-                    <li><a href="/status">Status Page</a></li>
-                    <li><a href="/current-tags">Current Tags</a></li>
-                </ul>
-            </body>
-        </html>
-    `);
-});
-
-// Serve a current tags page with all tracked item IDs, links, and thumbnails
+// Serve a page showing current tracked item IDs with links and thumbnails
 app.get('/current-tags', async (req, res) => {
     let itemsHtml = '';
 
