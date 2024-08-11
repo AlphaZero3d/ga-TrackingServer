@@ -53,21 +53,30 @@ async function getItemDetails(itemId) {
     }
 }
 
+// Validate item ID to ensure it is a correct eBay item ID
+function isValidItemId(itemId) {
+    return /^\d{12}$/.test(itemId.trim());
+}
+
 // Track page views
 app.get('/track', async (req, res) => {
     const measurementId = 'G-2ZPVT8VYJT'; // Your specific Measurement ID
     const itemId = req.query.item_id;
 
-    if (!itemId) {
-        return res.status(400).send('Item ID is required');
+    if (!itemId || !isValidItemId(itemId)) {
+        return res.status(400).send('Valid 12-digit Item ID is required');
     }
 
-    // Add the item ID to the tracked items list
+    // Add the item ID to the tracked items list if not already present
     if (!trackedItems.includes(itemId)) {
         trackedItems.push(itemId);
 
         // Save the updated list to the file
-        fs.writeFileSync(dataFilePath, JSON.stringify(trackedItems));
+        try {
+            fs.writeFileSync(dataFilePath, JSON.stringify(trackedItems));
+        } catch (error) {
+            console.error('Error saving tracked items:', error);
+        }
     }
 
     // Log the hit to Google Analytics
