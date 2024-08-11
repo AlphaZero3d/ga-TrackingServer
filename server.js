@@ -42,6 +42,20 @@ app.get('/track', async (req, res) => {
         res.status(500).send('Error logging to Google Analytics');
     }
 });
+app.get('/', (req, res) => {
+    res.send(`
+        <html>
+            <head>
+                <title>Welcome to Outlytic</title>
+            </head>
+            <body>
+                <h1>Welcome to Outlytic</h1>
+                <p>This is the root page of your Node.js application.</p>
+                <p>Go to <a href="/status">Status Page</a> to check the server status.</p>
+            </body>
+        </html>
+    `);
+});
 
 // Serve a status page
 app.get('/status', (req, res) => {
