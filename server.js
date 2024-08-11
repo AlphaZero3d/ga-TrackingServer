@@ -42,11 +42,22 @@ app.get('/track', async (req, res) => {
         res.status(500).send('Error logging to Google Analytics');
     }
 });
+
+// Root route with Google Analytics tracking pixel
 app.get('/', (req, res) => {
     res.send(`
         <html>
             <head>
                 <title>Welcome to Outlytic</title>
+                <!-- Global site tag (gtag.js) - Google Analytics -->
+                <script async src="https://www.googletagmanager.com/gtag/js?id=G-2ZPVT8VYJT"></script>
+                <script>
+                  window.dataLayer = window.dataLayer || [];
+                  function gtag(){dataLayer.push(arguments);}
+                  gtag('js', new Date());
+
+                  gtag('config', 'G-2ZPVT8VYJT');
+                </script>
             </head>
             <body>
                 <h1>Welcome to Outlytic</h1>
@@ -57,13 +68,22 @@ app.get('/', (req, res) => {
     `);
 });
 
-// Serve a status page
+// Serve a status page with Google Analytics tracking pixel
 app.get('/status', (req, res) => {
     res.setHeader('Content-Type', 'text/html');
     res.send(`
         <html>
             <head>
                 <title>Tracking Server Status</title>
+                <!-- Global site tag (gtag.js) - Google Analytics -->
+                <script async src="https://www.googletagmanager.com/gtag/js?id=G-2ZPVT8VYJT"></script>
+                <script>
+                  window.dataLayer = window.dataLayer || [];
+                  function gtag(){dataLayer.push(arguments);}
+                  gtag('js', new Date());
+
+                  gtag('config', 'G-2ZPVT8VYJT');
+                </script>
             </head>
             <body>
                 <h1>Tracking Server is Running!</h1>
