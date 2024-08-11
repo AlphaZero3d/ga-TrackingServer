@@ -51,6 +51,8 @@ app.get('/', (req, res) => {
         <html>
             <head>
                 <title>Welcome to Outlytic</title>
+                <!-- Link to the stylesheet -->
+                <link rel="stylesheet" type="text/css" href="/styles.css">
                 <!-- Global site tag (gtag.js) - Google Analytics -->
                 <script async src="https://www.googletagmanager.com/gtag/js?id=G-VC25KNECBG"></script>
                 <script>
@@ -71,13 +73,14 @@ app.get('/', (req, res) => {
     `);
 });
 
-// Serve a status page with Google Analytics tracking pixel
 app.get('/status', (req, res) => {
     res.setHeader('Content-Type', 'text/html');
     res.send(`
         <html>
             <head>
                 <title>Tracking Server Status</title>
+                <!-- Link to the stylesheet -->
+                <link rel="stylesheet" type="text/css" href="/styles.css">
                 <!-- Global site tag (gtag.js) - Google Analytics -->
                 <script async src="https://www.googletagmanager.com/gtag/js?id=G-VC25KNECBG"></script>
                 <script>
@@ -100,12 +103,13 @@ app.get('/status', (req, res) => {
     `);
 });
 
-// Serve a homepage with links to other pages
 app.get('/home', (req, res) => {
     res.send(`
         <html>
             <head>
                 <title>Outlytic Homepage</title>
+                <!-- Link to the stylesheet -->
+                <link rel="stylesheet" type="text/css" href="/styles.css">
                 <!-- Global site tag (gtag.js) - Google Analytics -->
                 <script async src="https://www.googletagmanager.com/gtag/js?id=G-VC25KNECBG"></script>
                 <script>
@@ -127,6 +131,7 @@ app.get('/home', (req, res) => {
         </html>
     `);
 });
+
 
 // Start the server
 app.listen(port, () => {
