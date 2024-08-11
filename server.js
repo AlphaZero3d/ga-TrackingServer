@@ -8,13 +8,21 @@ const port = process.env.PORT || 4000;
 // Path to the file where tracked items will be stored
 const dataFilePath = 'trackedItems.json';
 
-// Load tracked items from file on startup, handle empty or corrupt JSON
+// Function to sanitize tracked items
+function sanitizeTrackedItems(items) {
+    return items.filter(itemId => /^\d{12}$/.test(itemId.trim()));
+}
+
+// Load and sanitize tracked items from file on startup
 let trackedItems = [];
 try {
     if (fs.existsSync(dataFilePath)) {
         const data = fs.readFileSync(dataFilePath, 'utf8');
         if (data) {
-            trackedItems = JSON.parse(data);
+            const parsedItems = JSON.parse(data);
+            trackedItems = sanitizeTrackedItems(parsedItems);
+            // Save sanitized items back to file
+            fs.writeFileSync(dataFilePath, JSON.stringify(trackedItems));
         }
     }
 } catch (error) {
