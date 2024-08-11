@@ -3,7 +3,7 @@ const axios = require('axios');
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Store tracked item IDs (optional, for demonstration)
+// Store tracked item IDs
 let trackedItems = [];
 
 // Track page views
@@ -23,7 +23,7 @@ app.get('/track', async (req, res) => {
     // Log the hit to Google Analytics
     try {
         await axios.post(`https://www.google-analytics.com/mp/collect?measurement_id=${measurementId}`, {
-            client_id: 'anon', // replace with a unique identifier if you have one
+            client_id: 'anon',
             events: [{
                 name: 'page_view',
                 params: {
