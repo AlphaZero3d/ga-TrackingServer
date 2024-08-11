@@ -25,7 +25,7 @@ try {
 // Serve static files from the "public" directory
 app.use(express.static('public'));
 
-// Function to get eBay item details by scraping the page
+// Function to get eBay item details
 async function getItemDetails(itemId) {
     const ebayUrl = `https://www.ebay.com/itm/${itemId}`;
     try {
@@ -33,10 +33,10 @@ async function getItemDetails(itemId) {
         const $ = cheerio.load(response.data);
 
         // Scrape the title
-        const title = $('.x-item-title__mainTitle .ux-textspans--BOLD').text().trim();
+        const title = $('.x-item-title__mainTitle .ux-textspans').text().trim();
 
         // Scrape the image URL
-        const imageUrl = $('.ux-image-carousel-item.active img').attr('src');
+        const imageUrl = $('.ux-image-carousel-item img').first().attr('src');
 
         if (title && imageUrl) {
             return {
