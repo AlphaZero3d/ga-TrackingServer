@@ -50,7 +50,7 @@ app.get('/', (req, res) => {
             <head>
                 <title>Welcome to Outlytic</title>
                 <!-- Global site tag (gtag.js) - Google Analytics -->
-                <script async src="https://www.googletagmanager.com/gtag/js?id=G-2ZPVT8VYJT"></script>
+                <script async src="https://www.googletagmanager.com/gtag/js?id=G-VC25KNECBG"></script>
                 <script>
                   window.dataLayer = window.dataLayer || [];
                   function gtag(){dataLayer.push(arguments);}
@@ -63,6 +63,7 @@ app.get('/', (req, res) => {
                 <h1>Welcome to Outlytic</h1>
                 <p>This is the root page of your Node.js application.</p>
                 <p>Go to <a href="/status">Status Page</a> to check the server status.</p>
+                <p>Go to <a href="/home">Homepage</a> to see the links to other pages.</p>
             </body>
         </html>
     `);
@@ -76,7 +77,7 @@ app.get('/status', (req, res) => {
             <head>
                 <title>Tracking Server Status</title>
                 <!-- Global site tag (gtag.js) - Google Analytics -->
-                <script async src="https://www.googletagmanager.com/gtag/js?id=G-2ZPVT8VYJT"></script>
+                <script async src="https://www.googletagmanager.com/gtag/js?id=G-VC25KNECBG"></script>
                 <script>
                   window.dataLayer = window.dataLayer || [];
                   function gtag(){dataLayer.push(arguments);}
@@ -90,6 +91,35 @@ app.get('/status', (req, res) => {
                 <p>The server is currently tracking the following item IDs:</p>
                 <ul>
                     ${trackedItems.map(item => `<li>${item}</li>`).join('')}
+                </ul>
+                <p>Go back to <a href="/home">Homepage</a>.</p>
+            </body>
+        </html>
+    `);
+});
+
+// Serve a homepage with links to other pages
+app.get('/home', (req, res) => {
+    res.send(`
+        <html>
+            <head>
+                <title>Outlytic Homepage</title>
+                <!-- Global site tag (gtag.js) - Google Analytics -->
+                <script async src="https://www.googletagmanager.com/gtag/js?id=G-VC25KNECBG"></script>
+                <script>
+                  window.dataLayer = window.dataLayer || [];
+                  function gtag(){dataLayer.push(arguments);}
+                  gtag('js', new Date());
+
+                  gtag('config', 'G-2ZPVT8VYJT');
+                </script>
+            </head>
+            <body>
+                <h1>Outlytic Homepage</h1>
+                <p>Welcome to the Outlytic homepage. Below are links to various pages:</p>
+                <ul>
+                    <li><a href="/">Root Page</a></li>
+                    <li><a href="/status">Status Page</a></li>
                 </ul>
             </body>
         </html>
