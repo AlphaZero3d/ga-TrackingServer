@@ -1,21 +1,49 @@
-const fs = require('fs');
 const express = require('express');
 const axios = require('axios');
+const fs = require('fs');
 const app = express();
 const port = process.env.PORT || 4000;
 
 // Path to the file where tracked items will be stored
 const dataFilePath = 'trackedItems.json';
 
-// Load tracked items from file on startup
+// Load tracked items from file on startup, handle empty or corrupt JSON
 let trackedItems = [];
-if (fs.existsSync(dataFilePath)) {
-    const data = fs.readFileSync(dataFilePath);
-    trackedItems = JSON.parse(data);
+try {
+    if (fs.existsSync(dataFilePath)) {
+        const data = fs.readFileSync(dataFilePath, 'utf8');
+        if (data) {
+            trackedItems = JSON.parse(data);
+        }
+    }
+} catch (error) {
+    console.error("Error reading or parsing trackedItems.json, starting with an empty array.", error);
+    trackedItems = [];
 }
 
 // Serve static files from the "public" directory
 app.use(express.static('public'));
+
+// Function to get eBay item details
+async function getItemDetails(itemId) {
+    const ebayUrl = `https://api.ebay.com/buy/browse/v1/item_summary/search?q=${itemId}`;
+    try {
+        const response = await axios.get(ebayUrl);
+        if (response.data && response.data.itemSummaries && response.data.itemSummaries.length > 0) {
+            const item = response.data.itemSummaries[0];
+            return {
+                title: item.title,
+                link: `https://www.ebay.com/itm/${itemId}`,
+                thumbnail: item.image.imageUrl
+            };
+        } else {
+            return null;
+        }
+    } catch (error) {
+        console.error(`Error fetching details for item ${itemId}:`, error);
+        return null;
+    }
+}
 
 // Track page views
 app.get('/track', async (req, res) => {
@@ -66,12 +94,11 @@ app.get('/', (req, res) => {
                 <!-- Link to the stylesheet -->
                 <link rel="stylesheet" type="text/css" href="/styles.css">
                 <!-- Global site tag (gtag.js) - Google Analytics -->
-                <script async src="https://www.googletagmanager.com/gtag/js?id=G-W1147JEP9M"></script>
+                <script async src="https://www.googletagmanager.com/gtag/js?id=G-VC25KNECBG"></script>
                 <script>
                   window.dataLayer = window.dataLayer || [];
                   function gtag(){dataLayer.push(arguments);}
                   gtag('js', new Date());
-
                   gtag('config', 'G-2ZPVT8VYJT');
                 </script>
             </head>
@@ -96,12 +123,11 @@ app.get('/status', (req, res) => {
                 <!-- Link to the stylesheet -->
                 <link rel="stylesheet" type="text/css" href="/styles.css">
                 <!-- Global site tag (gtag.js) - Google Analytics -->
-                <script async src="https://www.googletagmanager.com/gtag/js?id=G-W1147JEP9M"></script>
+                <script async src="https://www.googletagmanager.com/gtag/js?id=G-VC25KNECBG"></script>
                 <script>
                   window.dataLayer = window.dataLayer || [];
                   function gtag(){dataLayer.push(arguments);}
                   gtag('js', new Date());
-
                   gtag('config', 'G-2ZPVT8VYJT');
                 </script>
             </head>
@@ -126,12 +152,11 @@ app.get('/home', (req, res) => {
                 <!-- Link to the stylesheet -->
                 <link rel="stylesheet" type="text/css" href="/styles.css">
                 <!-- Global site tag (gtag.js) - Google Analytics -->
-                <script async src="https://www.googletagmanager.com/gtag/js?id=G-W1147JEP9M"></script>
+                <script async src="https://www.googletagmanager.com/gtag/js?id=G-VC25KNECBG"></script>
                 <script>
                   window.dataLayer = window.dataLayer || [];
                   function gtag(){dataLayer.push(arguments);}
                   gtag('js', new Date());
-
                   gtag('config', 'G-2ZPVT8VYJT');
                 </script>
             </head>
@@ -148,8 +173,26 @@ app.get('/home', (req, res) => {
     `);
 });
 
-// Serve a current tags page with all tracked item IDs
-app.get('/current-tags', (req, res) => {
+// Serve a current tags page with all tracked item IDs, links, and thumbnails
+app.get('/current-tags', async (req, res) => {
+    let itemsHtml = '';
+
+    for (const itemId of trackedItems) {
+        const itemDetails = await getItemDetails(itemId);
+        if (itemDetails) {
+            itemsHtml += `
+                <li>
+                    <a href="${itemDetails.link}" target="_blank">
+                        <img src="${itemDetails.thumbnail}" alt="${itemDetails.title}" width="50" height="50">
+                        ${itemDetails.title}
+                    </a>
+                </li>
+            `;
+        } else {
+            itemsHtml += `<li>${itemId} (details not available)</li>`;
+        }
+    }
+
     res.setHeader('Content-Type', 'text/html');
     res.send(`
         <html>
@@ -157,21 +200,12 @@ app.get('/current-tags', (req, res) => {
                 <title>Current Tags</title>
                 <!-- Link to the stylesheet -->
                 <link rel="stylesheet" type="text/css" href="/styles.css">
-                <!-- Global site tag (gtag.js) - Google Analytics -->
-                <script async src="https://www.googletagmanager.com/gtag/js?id=G-W1147JEP9M"></script>
-                <script>
-                  window.dataLayer = window.dataLayer || [];
-                  function gtag(){dataLayer.push(arguments);}
-                  gtag('js', new Date());
-
-                  gtag('config', 'G-2ZPVT8VYJT');
-                </script>
             </head>
             <body>
                 <h1>Current Tracked Item IDs</h1>
-                <p>Below are the item IDs that have been tracked so far:</p>
+                <p>Below are the item IDs that have been tracked so far, with links to the eBay products and thumbnails:</p>
                 <ul>
-                    ${trackedItems.map(item => `<li>${item}</li>`).join('')}
+                    ${itemsHtml}
                 </ul>
                 <p>Go back to <a href="/home">Homepage</a>.</p>
             </body>
