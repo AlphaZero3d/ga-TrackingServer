@@ -69,6 +69,7 @@ app.get('/', (req, res) => {
                 <p>This is the root page of your Node.js application.</p>
                 <p>Go to <a href="/status">Status Page</a> to check the server status.</p>
                 <p>Go to <a href="/home">Homepage</a> to see the links to other pages.</p>
+                <p>Go to <a href="/current-tags">Current Tags</a> to see all tracked tags.</p>
             </body>
         </html>
     `);
@@ -129,7 +130,39 @@ app.get('/home', (req, res) => {
                 <ul>
                     <li><a href="/">Root Page</a></li>
                     <li><a href="/status">Status Page</a></li>
+                    <li><a href="/current-tags">Current Tags</a></li>
                 </ul>
+            </body>
+        </html>
+    `);
+});
+
+// Serve a current tags page with all tracked item IDs
+app.get('/current-tags', (req, res) => {
+    res.setHeader('Content-Type', 'text/html');
+    res.send(`
+        <html>
+            <head>
+                <title>Current Tags</title>
+                <!-- Link to the stylesheet -->
+                <link rel="stylesheet" type="text/css" href="/styles.css">
+                <!-- Global site tag (gtag.js) - Google Analytics -->
+                <script async src="https://www.googletagmanager.com/gtag/js?id=G-VC25KNECBG"></script>
+                <script>
+                  window.dataLayer = window.dataLayer || [];
+                  function gtag(){dataLayer.push(arguments);}
+                  gtag('js', new Date());
+
+                  gtag('config', 'G-2ZPVT8VYJT');
+                </script>
+            </head>
+            <body>
+                <h1>Current Tracked Item IDs</h1>
+                <p>Below are the item IDs that have been tracked so far:</p>
+                <ul>
+                    ${trackedItems.map(item => `<li>${item}</li>`).join('')}
+                </ul>
+                <p>Go back to <a href="/home">Homepage</a>.</p>
             </body>
         </html>
     `);
