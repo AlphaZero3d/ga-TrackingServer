@@ -3,6 +3,8 @@ const axios = require('axios');
 const app = express();
 const port = process.env.PORT || 4000;
 
+// Serve static files from the "public" directory
+app.use(express.static('public'));
 // Store tracked item IDs
 let trackedItems = [];
 
