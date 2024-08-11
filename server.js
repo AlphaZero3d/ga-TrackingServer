@@ -5,6 +5,7 @@ const port = process.env.PORT || 4000;
 
 // Serve static files from the "public" directory
 app.use(express.static('public'));
+
 // Store tracked item IDs
 let trackedItems = [];
 
@@ -73,6 +74,7 @@ app.get('/', (req, res) => {
     `);
 });
 
+// Serve a status page with Google Analytics tracking pixel
 app.get('/status', (req, res) => {
     res.setHeader('Content-Type', 'text/html');
     res.send(`
@@ -103,6 +105,7 @@ app.get('/status', (req, res) => {
     `);
 });
 
+// Serve a homepage with links to other pages
 app.get('/home', (req, res) => {
     res.send(`
         <html>
@@ -131,7 +134,6 @@ app.get('/home', (req, res) => {
         </html>
     `);
 });
-
 
 // Start the server
 app.listen(port, () => {
