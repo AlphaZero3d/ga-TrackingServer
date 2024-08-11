@@ -102,7 +102,7 @@ app.get('/', (req, res) => {
                 <!-- Link to the stylesheet -->
                 <link rel="stylesheet" type="text/css" href="/styles.css">
                 <!-- Global site tag (gtag.js) - Google Analytics -->
-                <script async src="https://www.googletagmanager.com/gtag/js?id=G-VC25KNECBG"></script>
+                <script async src="https://www.googletagmanager.com/gtag/js?id=G-W1147JEP9M"></script>
                 <script>
                   window.dataLayer = window.dataLayer || [];
                   function gtag(){dataLayer.push(arguments);}
@@ -131,7 +131,7 @@ app.get('/status', (req, res) => {
                 <!-- Link to the stylesheet -->
                 <link rel="stylesheet" type="text/css" href="/styles.css">
                 <!-- Global site tag (gtag.js) - Google Analytics -->
-                <script async src="https://www.googletagmanager.com/gtag/js?id=G-VC25KNECBG"></script>
+                <script async src="https://www.googletagmanager.com/gtag/js?id=G-W1147JEP9M"></script>
                 <script>
                   window.dataLayer = window.dataLayer || [];
                   function gtag(){dataLayer.push(arguments);}
@@ -160,7 +160,7 @@ app.get('/home', (req, res) => {
                 <!-- Link to the stylesheet -->
                 <link rel="stylesheet" type="text/css" href="/styles.css">
                 <!-- Global site tag (gtag.js) - Google Analytics -->
-                <script async src="https://www.googletagmanager.com/gtag/js?id=G-VC25KNECBG"></script>
+                <script async src="https://www.googletagmanager.com/gtag/js?id=G-W1147JEP9M"></script>
                 <script>
                   window.dataLayer = window.dataLayer || [];
                   function gtag(){dataLayer.push(arguments);}
